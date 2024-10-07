@@ -1,55 +1,49 @@
-import {Job} from '../models/job.model.js'
+import { Job } from "../models/job.model.js";
 
-//admin Post Jobs
-export const postJob = async (req,res) => {
-	try{
-		const {title, description, requirements, salary, location, jobType, experience, position, companyId} = req.body;
-		const userId = req.id
+// admin post krega job
+export const postJob = async (req, res) => {
+    try {
+        const { title, description, requirements, salary, location, jobType, experience, position, companyId } = req.body;
+        const userId = req.id;
 
-		if(!title || !description || !requirements || !salary || !location || !jobType || !experience || !position || !companyId) {
-			return res.status(400).json({
-				message:"Something is missing",
-				success:false
-			});
-		};
-
-		const job = await Job.create({
-			title,
-			description,
-			requirements:requirements.split(","),
-			salary:Number(salary),
-			location,
-			jobType,
-			experienceLevel:experience,
-			position,
-			company:companyId,
-			created_by:userId
-
-		});
-
-		return res.status(201).json({
-			message:"New Job Created SuccessFull.",
-			job,
-			success:true
-		})
-	} catch (error) {
-		console.log(error)
-	}
+        if (!title || !description || !requirements || !salary || !location || !jobType || !experience || !position || !companyId) {
+            return res.status(400).json({
+                message: "Somethin is missing.",
+                success: false
+            })
+        };
+        const job = await Job.create({
+            title,
+            description,
+            requirements: requirements.split(","),
+            salary: Number(salary),
+            location,
+            jobType,
+            experienceLevel: experience,
+            position,
+            company: companyId,
+            created_by: userId
+        });
+        return res.status(201).json({
+            message: "New job created successfully.",
+            job,
+            success: true
+        });
+    } catch (error) {
+        console.log(error);
+    }
 }
-
-// Job Seeker 
-
-export const getAllJobs = async(req,res) => {
-	try {
-		const keyword = req.query.keyword || "";
-		const query = {
-			$or: [
-				{ title: { $regex: keyword, $options: "i" } },
+// student k liye
+export const getAllJobs = async (req, res) => {
+    try {
+        const keyword = req.query.keyword || "";
+        const query = {
+            $or: [
+                { title: { $regex: keyword, $options: "i" } },
                 { description: { $regex: keyword, $options: "i" } },
-			]
-		};
-
-		const jobs = await Job.find(query).populate({
+            ]
+        };
+        const jobs = await Job.find(query).populate({
             path: "company"
         }).sort({ createdAt: -1 });
         if (!jobs) {
@@ -58,18 +52,15 @@ export const getAllJobs = async(req,res) => {
                 success: false
             })
         };
-
-		return res.status(200).json({
-			jobs,
-			success:true
-		})
-
-	} catch (error) {
-		console.log(error)
-	}
+        return res.status(200).json({
+            jobs,
+            success: true
+        })
+    } catch (error) {
+        console.log(error);
+    }
 }
-
-//Student
+// student
 export const getJobById = async (req, res) => {
     try {
         const jobId = req.params.id;
@@ -87,7 +78,7 @@ export const getJobById = async (req, res) => {
         console.log(error);
     }
 }
-// admin Get Job
+// admin kitne job create kra hai abhi tk
 export const getAdminJobs = async (req, res) => {
     try {
         const adminId = req.id;
